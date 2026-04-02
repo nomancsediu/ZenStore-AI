@@ -1,9 +1,10 @@
 import csv
 import json
 import logging
+import cloudinary.uploader
 from django.core.cache import cache
 from .models import Product
-from .tasks import enhance_product_with_ai, simulate_image_processing
+from .tasks import enhance_product_with_ai
 
 logger = logging.getLogger(__name__)
 
@@ -39,25 +40,51 @@ class ProductService:
         cache.delete(CACHE_KEY.format(user_id))
 
     @staticmethod
+    def upload_image(image_file):
+        result = cloudinary.uploader.upload(
+            image_file,
+            folder='zenstore',
+            transformation=[{'width': 800, 'crop': 'limit', 'quality': 'auto'}],
+        )
+        return result['secure_url']
+
+    @staticmethod
     def create_product(owner, name, price, stock, image=None):
+        image_url = None
+        if image:
+            try:
+                if isinstance(image, str) and image.startswith('http'):
+                    result = cloudinary.uploader.upload(
+                        image,
+                        folder='zenstore',
+                        transformation=[{'width': 800, 'crop': 'limit', 'quality': 'auto'}],
+                    )
+                    image_url = result['secure_url']
+                else:
+                    image_url = ProductService.upload_image(image)
+            except Exception as e:
+                logger.error(f"Cloudinary upload failed: {e}")
+
         product = Product.objects.create(
-            owner=owner, name=name, price=price, stock=stock, image=image
+            owner=owner, name=name, price=price, stock=stock, image=image_url
         )
         ProductService.invalidate_cache(owner.id)
         enhance_product_with_ai.delay(product.id)
-        if image:
-            simulate_image_processing.delay(product.id)
         return product
 
     @staticmethod
     def bulk_create_from_file(owner, file_obj, file_name):
         created = []
-        for row in product_file_generator(file_obj, file_name):
-            p = ProductService.create_product(
-                owner=owner,
-                name=row['name'],
-                price=row['price'],
-                stock=row.get('stock', 0),
-            )
-            created.append(p.id)
-        return {'created': len(created), 'product_ids': created}
+        errors = []
+        for i, row in enumerate(product_file_generator(file_obj, file_name)):
+            try:
+                p = ProductService.create_product(
+                    owner=owner,
+                    name=row['name'],
+                    price=row['price'],
+                    stock=row.get('stock', 0),
+                )
+                created.append(p.id)
+            except Exception as e:
+                errors.append({'row': i + 1, 'error': str(e)})
+        return {'created': len(created), 'errors': errors}
