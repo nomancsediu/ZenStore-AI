@@ -1,19 +1,8 @@
 <div align="center">
 
-<img src="frontend/src/assets/hero.png" alt="ZenStore AI" width="120"/>
-
 <h1>ZenStore AI</h1>
 
 <p><i>AI-powered E-commerce Store Management — where your products describe themselves.</i></p>
-
-<p>
-  <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white"/>
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
-  <img src="https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
-  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white"/>
-</p>
 
 </div>
 
@@ -27,24 +16,9 @@ Built with a focus on clean architecture, asynchronous background processing, an
 
 ---
 
-## Assignment Requirements
-
-| Requirement | Implementation |
-|---|---|
-| REST API | Django REST Framework with full CRUD and bulk upload endpoints |
-| LLM Integration | Groq LLaMA (`llama-3.1-8b-instant`) generates 2-sentence description and category |
-| Background Tasks | Celery + Redis handles AI generation asynchronously |
-| OOP Principles | `LLMService`, `ProductService` classes with clear responsibilities |
-| Custom Decorator | `@performance_logger` in `core/decorators.py` logs execution time |
-| Python Generators | `csv_product_generator`, `json_product_generator` in `core/generators.py` |
-| Caching Layer | Redis cache per user — invalidated on create, update, and delete |
-| JWT Authentication | Simple JWT — each user sees only their own products |
-| API Documentation | Swagger UI via `drf-spectacular` at `/api/schema/swagger-ui/` |
-| Frontend (Bonus) | React 18 + Vite + Tailwind CSS |
-
----
-
 ## Core Features
+
+<div align="center">
 
 | Feature | Description |
 |---|---|
@@ -58,122 +32,84 @@ Built with a focus on clean architecture, asynchronous background processing, an
 | Swagger Docs | Interactive API documentation at `/api/schema/swagger-ui/` |
 | Dockerized | Frontend + Backend + Redis containerized |
 
+</div>
+
 ---
 
 ## Tech Stack
 
 ### Backend
-- Django + Django REST Framework
-- Simple JWT — token-based authentication
-- Celery — async background task processing
-- Redis — caching and Celery message broker
-- SQLite — database
-- Cloudinary — image upload and storage
-- Groq API (LLaMA 3.1) — AI product enhancement
-- drf-spectacular — Swagger / OpenAPI documentation
 
-### Frontend (Bonus)
-- React 18 with Vite
-- Tailwind CSS
-- React Router v6
-- Axios
+<p>
+  <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white"/>
+  <img src="https://img.shields.io/badge/DRF-ff1709?style=for-the-badge&logo=django&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"/>
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Groq_LLaMA-F54E27?style=for-the-badge&logo=meta&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black"/>
+</p>
+
+### Frontend
+
+<p>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"/>
+</p>
 
 ### DevOps
-- Docker + Docker Compose
-- Environment-based configuration via `.env`
+
+<p>
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker_Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+</p>
 
 ---
 
 ## System Architecture
 
-```
-User
- |
- v
-React Frontend (Vite)
- |
- v
-Django REST API
- |--- SQLite        (persistent storage)
- |--- Redis         (cache + message broker)
- |--- Cloudinary    (image storage)
- |--- Celery Worker
-           |
-           v
-       Groq LLaMA
-    (AI Enhancement)
-```
+<div align="center">
+  <!-- Add system architecture diagram here -->
+</div>
 
 ---
 
 ## AI Processing Flow
 
-```
-1. User adds product via API
-       |
-2. Product saved to database (ai_status = "pending")
-       |
-3. Celery task triggered asynchronously (ai_status = "processing")
-       |
-4. Groq LLaMA generates 2-sentence description + category
-       |
-5. Product updated in database (ai_status = "done")
-       |
-6. Redis cache invalidated — frontend reflects updated content
-```
-
----
-
-## Key Technical Highlights
-
-### Custom Decorator — Performance Logger
-
-```python
-# core/decorators.py
-def performance_logger(func):
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        result = func(*args, **kwargs)
-        logger.info(f"{func.__name__} executed in {time.time() - start:.2f}s")
-        return result
-    return wrapper
-```
-
-### Python Generators — Bulk File Processing
-
-```python
-# core/generators.py
-def csv_product_generator(file_obj):
-    reader = csv.DictReader(io.StringIO(content))
-    for row in reader:
-        yield {'name': ..., 'price': ..., 'stock': ...}
-```
-
-### Redis Caching — Per User
-
-```python
-# products/services.py
-cache_key = f"products_user_{user_id}"
-cached = cache.get(cache_key)
-if cached:
-    return cached
-```
+<div align="center">
+  <!-- Add AI processing flow diagram here -->
+</div>
 
 ---
 
 ## Screenshots
 
+<div align="center">
+
 **Login Page**
 <img src="screenshots/login.png" alt="Login" width="100%"/>
+
+<br/>
 
 **Dashboard**
 <img src="screenshots/dashboard.png" alt="Dashboard" width="100%"/>
 
+<br/>
+
 **Add Product Modal**
 <img src="screenshots/add-product.png" alt="Add Product" width="100%"/>
 
+<br/>
+
 **Bulk Upload**
 <img src="screenshots/bulk-upload.png" alt="Bulk Upload" width="100%"/>
+
+</div>
 
 ---
 
@@ -216,76 +152,14 @@ docker-compose up --build
 
 ---
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/auth/register/` | Register new user |
-| POST | `/api/auth/login/` | Login and get JWT token |
-| GET | `/api/products/` | List all products (cached) |
-| POST | `/api/products/` | Create product and trigger AI |
-| PUT | `/api/products/{id}/` | Update product |
-| DELETE | `/api/products/{id}/` | Delete product |
-| POST | `/api/products/bulk-upload/` | Bulk upload via CSV or JSON |
-
-> All product endpoints are user-scoped — users can only access their own data.
-
----
-
-## Project Structure
-
-```
-ZenStore-AI/
-|
-|-- backend/
-|   |-- authentication/     # JWT auth (register, login)
-|   |-- products/           # Product CRUD, bulk upload, Celery tasks
-|   |-- core/               # LLMService, performance_logger, generators
-|   |-- zenstore/           # Django settings, Celery config
-|   |-- Dockerfile
-|
-|-- frontend/               # React 18 + Vite (Bonus)
-|   |-- src/
-|   |   |-- components/     # ProductCard, Modals, Toast
-|   |   |-- pages/          # Login, Register, Dashboard
-|   |   |-- sections/       # Navbar, ProductGrid
-|   |   |-- hooks/          # useToast
-|   |-- Dockerfile
-|
-|-- docker-compose.yml
-|-- .env.example
-|-- README.md
-```
-
----
-
-## Security
-
-- JWT access and refresh token authentication
-- User-scoped data — no cross-user data leakage
-- Protected API routes with custom decorators
-- Secrets managed via environment variables
-
----
-
-## Future Improvements
-
-- Role-based access control (Admin / Seller)
-- Analytics dashboard with sales insights
-- AI-powered pricing suggestions
-- Product search with Elasticsearch
-- CI/CD pipeline with GitHub Actions
-
----
-
-## Author
+<div align="center">
 
 **Abdullah Al Noman**
-CSE Student · Full Stack Developer
-Passionate about clean architecture, SOLID principles and production-grade systems.
 
----
+CSE Student · Full Stack Developer · Passionate about clean architecture, SOLID principles and production-grade systems.
 
-<div align="center">
-  If you found this project useful, consider giving it a star on GitHub.
+<br/>
+
+If you found this project useful, consider giving it a star on GitHub.
+
 </div>
