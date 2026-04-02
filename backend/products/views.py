@@ -39,6 +39,12 @@ class ProductCreateView(generics.CreateAPIView):
             image=data.get('image'),
         )
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({'detail': 'Product created.'}, status=status.HTTP_201_CREATED)
+
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
