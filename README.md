@@ -154,26 +154,10 @@ docker-compose up --build
 
 <div align="center">
 
-<img src="https://img.shields.io/badge/Built%20with-Django%20%2B%20React-092E20?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/AI%20Powered-Groq%20LLaMA-F54E27?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge"/>
-
-<br/><br/>
-
-**Abdullah Al Noman**
-
-CSE Student · Full Stack Developer
-
-Passionate about clean architecture, SOLID principles and production-grade systems.
-
-<br/>
+**Abdullah Al Noman** · CSE Student · Full Stack Developer
 
 [![GitHub](https://img.shields.io/badge/GitHub-nomancsediu-181717?style=flat-square&logo=github)](https://github.com/nomancsediu)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-nomanit-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/nomanit)
 [![Portfolio](https://img.shields.io/badge/Portfolio-abdnoman.com-000000?style=flat-square&logo=globe)](https://abdnoman.com)
-
-<br/>
-
-If you found this project useful, consider giving it a star on GitHub.
 
 </div>
