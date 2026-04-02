@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white"/>
   <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"/>
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
-  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white"/>
 </p>
 
 </div>
@@ -21,9 +21,26 @@
 
 ## 🚀 Overview
 
-**ZenStore AI** is a full-stack, production-grade e-commerce management platform where sellers can add products and the system **automatically enhances product titles and descriptions** using Large Language Models (LLM) via Groq's LLaMA API.
+**ZenStore AI** is a full-stack, production-grade e-commerce management platform where sellers can add products and the system **automatically enhances product descriptions and categories** using Large Language Models (LLM) via Groq's LLaMA API.
 
-Built with a focus on **clean architecture**, **asynchronous processing**, and **real-world production patterns** — including JWT authentication, Redis caching, Celery task queues, Cloudinary image storage, and full Docker containerization.
+Built with a focus on **clean architecture**, **asynchronous background processing**, and **real-world production patterns** — including JWT authentication, Redis caching, Celery task queues, Cloudinary image storage, Swagger API documentation, and full Docker containerization.
+
+---
+
+## ✅ Assignment Requirements — How Each Is Met
+
+| Requirement | Implementation |
+|---|---|
+| REST API | Django REST Framework with full CRUD + bulk upload endpoints |
+| LLM Integration | Groq LLaMA (`llama-3.1-8b-instant`) generates 2-sentence description + category |
+| Background Tasks | Celery + Redis handles AI generation asynchronously |
+| OOP Principles | `LLMService`, `ProductService` classes with clear responsibilities |
+| Custom Decorator | `@performance_logger` in `core/decorators.py` logs execution time |
+| Python Generators | `csv_product_generator`, `json_product_generator` in `core/generators.py` |
+| Caching Layer | Redis cache per user — invalidated on create/update/delete |
+| JWT Authentication | Simple JWT — each user sees only their own products |
+| API Documentation | Swagger UI via `drf-spectacular` at `/api/schema/swagger-ui/` |
+| Frontend (Bonus) | React 18 + Vite + Tailwind CSS |
 
 ---
 
@@ -31,14 +48,15 @@ Built with a focus on **clean architecture**, **asynchronous processing**, and *
 
 | Feature | Description |
 |---|---|
-| 🔐 JWT Authentication | Secure register & login flow |
+| 🔐 JWT Authentication | Secure register & login — user-scoped data |
 | 📦 Product CRUD | Full create, read, update, delete |
-| 🤖 AI Enhancement | Groq LLaMA auto-enhances titles & descriptions |
-| ⚡ Async Processing | Celery workers handle AI tasks in background |
-| 🗄️ Redis Caching | Optimized API response performance |
+| 🤖 AI Enhancement | Groq LLaMA generates catchy description & category |
+| ⚡ Async Processing | Celery workers handle AI tasks without blocking the API |
+| 🗄️ Redis Caching | Per-user product cache with automatic invalidation |
 | ☁️ Cloudinary Upload | Cloud-based product image storage |
-| 📤 Bulk Upload | Upload multiple products via CSV/JSON |
-| 🐳 Fully Dockerized | Frontend + Backend + Redis + DB containerized |
+| 📤 Bulk Upload | Upload multiple products via CSV or JSON using Python Generators |
+| 📄 Swagger Docs | Interactive API documentation at `/api/schema/swagger-ui/` |
+| 🐳 Fully Dockerized | Frontend + Backend + Redis containerized |
 
 ---
 
@@ -48,12 +66,13 @@ Built with a focus on **clean architecture**, **asynchronous processing**, and *
 - **Django** + **Django REST Framework**
 - **Simple JWT** — token-based authentication
 - **Celery** — async background task processing
-- **Redis** — caching & message broker
-- **PostgreSQL** (production) / SQLite (development)
+- **Redis** — caching & Celery message broker
+- **SQLite** — database
 - **Cloudinary** — image upload & storage
-- **Groq API (LLaMA)** — AI product enhancement
+- **Groq API (LLaMA 3.1)** — AI product enhancement
+- **drf-spectacular** — Swagger / OpenAPI documentation
 
-### Frontend
+### Frontend *(Bonus)*
 - **React 18** with **Vite**
 - **Tailwind CSS**
 - **React Router v6**
@@ -75,9 +94,9 @@ React Frontend (Vite)
  │
  ▼
 Django REST API
- ├──► PostgreSQL  (persistent storage)
- ├──► Redis       (cache + message broker)
- ├──► Cloudinary  (image storage)
+ ├──► SQLite        (persistent storage)
+ ├──► Redis         (cache + message broker)
+ ├──► Cloudinary    (image storage)
  └──► Celery Worker
            │
            ▼
@@ -90,17 +109,51 @@ Django REST API
 ## 🔄 AI Processing Flow
 
 ```
-1. User adds product
+1. User adds product via API
        ↓
-2. Product saved to database
+2. Product saved to database (ai_status = "pending")
        ↓
-3. Celery task triggered asynchronously
+3. Celery task triggered asynchronously (ai_status = "processing")
        ↓
-4. Groq LLaMA enhances title & description
+4. Groq LLaMA generates 2-sentence description + category
        ↓
-5. Enhanced product saved back to database
+5. Product updated in database (ai_status = "done")
        ↓
-6. Frontend reflects updated content
+6. Redis cache invalidated — frontend reflects updated content
+```
+
+---
+
+## 🔑 Key Technical Highlights
+
+### Custom Decorator — Performance Logger
+```python
+# core/decorators.py
+def performance_logger(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        logger.info(f"{func.__name__} executed in {time.time() - start:.2f}s")
+        return result
+    return wrapper
+```
+
+### Python Generators — Bulk File Processing
+```python
+# core/generators.py
+def csv_product_generator(file_obj):
+    reader = csv.DictReader(io.StringIO(content))
+    for row in reader:
+        yield {'name': ..., 'price': ..., 'stock': ...}
+```
+
+### Redis Caching — Per User
+```python
+# products/services.py
+cache_key = f"products_user_{user_id}"
+cached = cache.get(cache_key)
+if cached:
+    return cached
 ```
 
 ---
@@ -132,8 +185,6 @@ cd ZenStore-AI
 
 ### 2. Setup Environment Variables
 
-Copy the example and fill in your values:
-
 ```bash
 cp .env.example backend/.env
 ```
@@ -141,7 +192,6 @@ cp .env.example backend/.env
 ```env
 SECRET_KEY=your_secret_key
 DEBUG=True
-DATABASE_URL=postgres://user:password@db:5432/zenstore
 REDIS_URL=redis://redis:6379/0
 GROQ_API_KEY=your_groq_api_key
 CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -159,6 +209,7 @@ docker-compose up --build
 |---|---|
 | Frontend | http://localhost:5173 |
 | Backend API | http://localhost:8000 |
+| Swagger Docs | http://localhost:8000/api/schema/swagger-ui/ |
 
 ---
 
@@ -168,11 +219,13 @@ docker-compose up --build
 |---|---|---|
 | POST | `/api/auth/register/` | Register new user |
 | POST | `/api/auth/login/` | Login & get JWT token |
-| GET | `/api/products/` | List all products |
-| POST | `/api/products/` | Create product |
+| GET | `/api/products/` | List all products (cached) |
+| POST | `/api/products/` | Create product + trigger AI |
 | PUT | `/api/products/{id}/` | Update product |
 | DELETE | `/api/products/{id}/` | Delete product |
-| POST | `/api/products/bulk-upload/` | Bulk upload products |
+| POST | `/api/products/bulk-upload/` | Bulk upload via CSV/JSON |
+
+> All product endpoints are **user-scoped** — users can only access their own data.
 
 ---
 
@@ -182,19 +235,18 @@ docker-compose up --build
 ZenStore-AI/
 │
 ├── backend/
-│   ├── authentication/     # JWT auth
-│   ├── products/           # Product CRUD + AI tasks
-│   ├── core/               # LLM service, decorators
-│   ├── zenstore/           # Django settings & config
+│   ├── authentication/     # JWT auth (register, login)
+│   ├── products/           # Product CRUD, bulk upload, Celery tasks
+│   ├── core/               # LLMService, performance_logger, generators
+│   ├── zenstore/           # Django settings, Celery config
 │   └── Dockerfile
 │
-├── frontend/
+├── frontend/               # React 18 + Vite (Bonus)
 │   ├── src/
-│   │   ├── components/     # UI components
+│   │   ├── components/     # ProductCard, Modals, Toast
 │   │   ├── pages/          # Login, Register, Dashboard
 │   │   ├── sections/       # Navbar, ProductGrid
-│   │   ├── hooks/          # useToast
-│   │   └── router/         # React Router config
+│   │   └── hooks/          # useToast
 │   └── Dockerfile
 │
 ├── docker-compose.yml
@@ -207,9 +259,9 @@ ZenStore-AI/
 ## 🔐 Security
 
 - JWT access & refresh token authentication
+- User-scoped data — no cross-user data leakage
 - Protected API routes with custom decorators
 - Secrets managed via environment variables
-- Docker network isolation
 
 ---
 
@@ -223,7 +275,7 @@ ZenStore-AI/
 
 ---
 
-## 👨‍💻 Author
+## 👨💻 Author
 
 **Abdullah Al Noman**
 CSE Student · Full Stack Developer
