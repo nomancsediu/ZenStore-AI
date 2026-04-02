@@ -10,9 +10,9 @@
 
 ## Overview
 
-**ZenStore AI** is a full-stack, production-grade e-commerce management platform where sellers can add products and the system automatically enhances product descriptions and categories using Large Language Models (LLM) via Groq's LLaMA API.
+ZenStore AI is a full-stack e-commerce store management system where sellers can add products and the system automatically generates professional descriptions and categories using Groq's LLaMA model.
 
-Built with a focus on clean architecture, asynchronous background processing, and real-world production patterns — including JWT authentication, Redis caching, Celery task queues, Cloudinary image storage, Swagger API documentation, and full Docker containerization.
+The project is built around real-world backend engineering concepts including asynchronous task processing, caching, OOP design, custom decorators, Python generators, JWT-based authentication, and full Docker containerization.
 
 ---
 
