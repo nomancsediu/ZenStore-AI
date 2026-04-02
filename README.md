@@ -2,7 +2,7 @@
 
 <h1>ZenStore AI</h1>
 
-<p><i>AI-powered E-commerce Store Management — where your products describe themselves.</i></p>
+<p><i>AI-powered E-commerce Store Management, where your products describe themselves.</i></p>
 
 </div>
 
@@ -22,14 +22,14 @@ The project is built around real-world backend engineering concepts including as
 
 | Feature | Description |
 |---|---|
-| JWT Authentication | Secure register and login — user-scoped data |
+| JWT Authentication | Secure register and login, user-scoped data |
 | Product CRUD | Full create, read, update, delete |
 | AI Enhancement | Groq LLaMA generates catchy description and category |
 | Async Processing | Celery workers handle AI tasks without blocking the API |
 | Redis Caching | Per-user product cache with automatic invalidation |
 | Cloudinary Upload | Cloud-based product image storage |
 | Bulk Upload | Upload multiple products via CSV or JSON using Python Generators |
-| Swagger Docs | Interactive API documentation at `/api/schema/swagger-ui/` |
+| Swagger Docs | Interactive API documentation |
 | Dockerized | Frontend + Backend + Redis containerized |
 
 </div>
@@ -74,7 +74,7 @@ The project is built around real-world backend engineering concepts including as
 ## System Architecture
 
 <div align="center">
-  <!-- Add system architecture diagram here -->
+  <img src="screenshots/system-architecture.png" alt="System Architecture" width="100%"/>
 </div>
 
 ---
@@ -82,7 +82,7 @@ The project is built around real-world backend engineering concepts including as
 ## AI Processing Flow
 
 <div align="center">
-  <!-- Add AI processing flow diagram here -->
+  <img src="screenshots/ai-flow.png" alt="AI Processing Flow" width="100%"/>
 </div>
 
 ---
