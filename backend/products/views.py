@@ -8,7 +8,7 @@ from .serializers import ProductSerializer, ProductCreateSerializer, BulkUploadS
 from .services import ProductService
 from core.decorators import performance_logger
 
-
+# List all products belonging to the authenticated user (cached)
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
 
@@ -24,10 +24,10 @@ class ProductListView(generics.ListAPIView):
         ProductService.set_cached_products(request.user.id, response.data)
         return response
 
-
+# Create a single product and trigger AI enhancement in background
 class ProductCreateView(generics.CreateAPIView):
     serializer_class = ProductCreateSerializer
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser) #Allows file uploads for product images
 
     def perform_create(self, serializer):
         data = serializer.validated_data
@@ -46,6 +46,7 @@ class ProductCreateView(generics.CreateAPIView):
         return Response({'detail': 'Product created.'}, status=status.HTTP_201_CREATED)
 
 
+# Retrieve, update, or delete a product (owner only)
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
@@ -60,7 +61,7 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance.delete()
         ProductService.invalidate_cache(self.request.user.id)
 
-
+# Upload a CSV or JSON file to create multiple products in bulk
 class BulkUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = BulkUploadSerializer
@@ -69,7 +70,7 @@ class BulkUploadView(APIView):
     def post(self, request):
         serializer = BulkUploadSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        uploaded_file = serializer.validated_data['file']
+        uploaded_file = serializer.validated_data['file'] #Extract the uploaded file object
         try:
             result = ProductService.bulk_create_from_file(
                 owner=request.user,
