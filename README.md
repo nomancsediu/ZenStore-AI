@@ -10,7 +10,7 @@
 
 ## Overview
 
-ZenStore AI is a full-stack product management system where sellers add a product name and price — the rest is handled automatically. A Celery worker calls Groq's LLaMA model to generate a marketing description and category, updating the product in real time.
+ZenStore AI is a full-stack product management system where you add a product name and price — the rest is handled automatically. A Celery worker calls Groq's LLaMA model to generate a marketing description and category, updating the product in real time.
 
 Built to demonstrate production-grade backend concepts: JWT auth, async task processing, Redis caching, Python generators, custom decorators, and Docker containerization.
 
