@@ -34,7 +34,7 @@ export default function Dashboard({ logout }) {
       customClass: { popup: 'rounded-2xl text-sm' },
     })
     if (!result.isConfirmed) return
-    logout()
+    await logout()
     navigate('/login')
   }
 
