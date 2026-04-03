@@ -81,6 +81,7 @@ class ProductService:
         product = Product.objects.create(
             owner=owner, name=name, price=price, stock=stock, image=image_url
         )
+        
         ProductService.invalidate_cache(owner.id)
 
         # Trigger async AI enhancement (non-blocking)

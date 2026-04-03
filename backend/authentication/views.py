@@ -1,19 +1,25 @@
 from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
 
-# Get the custom User model (or default Django User)
 User = get_user_model()
 
-# View for new user registration (signup)
 class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()  # Query all users for uniqueness check
+    queryset = User.objects.all()
     serializer_class = RegisterSerializer
-    permission_classes = (permissions.AllowAny,) # Allow anyone to register (no authentication required)
+    permission_classes = (permissions.AllowAny,)
+
+
+class LogoutView(generics.GenericAPIView):
+    def post(self, request):
+        token = RefreshToken(request.data.get('refresh'))
+        token.blacklist()
+        return Response(status=204)
 
 
 class ProfileView(generics.RetrieveAPIView):
-    # View for authenticated user to view their own profile
     serializer_class = UserSerializer
 
     def get_object(self):
