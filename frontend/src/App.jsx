@@ -22,9 +22,13 @@ export default function App() {
     await login(username, password)
   }
 
-  const logout = () => {
-    localStorage.clear()
-    setUser(null)
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout/', { refresh: localStorage.getItem('refresh') })
+    } finally {
+      localStorage.clear()
+      setUser(null)
+    }
   }
 
   const router = useMemo(
