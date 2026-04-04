@@ -148,7 +148,7 @@ docker-compose up --build
 |---|---|
 | Frontend | http://localhost:5173 |
 | Backend API | http://localhost:8000 |
-| Swagger Docs | http://localhost:8000/api/schema/swagger-ui/ |
+| Swagger Docs | http://localhost:8000/api/docs/ |
 
 ---
 
